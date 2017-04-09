@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:ConfigurableGUI"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
+    <Window.DataContext>
+        <local:MainWindowViewModel/>
+    </Window.DataContext>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100*"/>
@@ -16,10 +19,9 @@
             <RowDefinition Height="293*"/>
         </Grid.RowDefinitions>
         <Label x:Name="greetingLabel" AutomationProperties.AutomationId="GreetingLabel" Content="Greeting" HorizontalAlignment="Left" Margin="31,10,0,0" Grid.Row="1" VerticalAlignment="Top"/>
-        <TextBox x:Name="greetingText" AutomationProperties.AutomationId="GreetingText" Grid.Column="1" HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="204">
-        </TextBox>
-        <Button x:Name="saveButton" AutomationProperties.AutomationId="SaveButton" Content="Save" Grid.Column="1" HorizontalAlignment="Left" Margin="233,13,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.167,-0.511" Click="saveButton_Click"/>
-        <Button x:Name="loadButton" AutomationProperties.AutomationId="LoadButton" Content="Load" Grid.Column="1" HorizontalAlignment="Left" Margin="322,13,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="loadButton_Click"/>
+        <TextBox x:Name="greetingText" AutomationProperties.AutomationId="GreetingText" Text="{Binding GreetingText}" Grid.Column="1" HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="204"/>
+        <Button x:Name="saveButton" AutomationProperties.AutomationId="SaveButton" Command="{Binding SaveGreetingCommand}" Content="Save" Grid.Column="1" HorizontalAlignment="Left" Margin="233,13,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.167,-0.511"/>
+        <Button x:Name="loadButton" AutomationProperties.AutomationId="LoadButton" Command="{Binding LoadGreetingCommand}" Content="Load" Grid.Column="1" HorizontalAlignment="Left" Margin="322,13,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75"/>
 
     </Grid>
 </Window>
