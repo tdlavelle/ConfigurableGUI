@@ -9,6 +9,7 @@ using System.IO;
 using System.Reflection;
 using TestStack.White.Configuration;
 using TestStack.White.Factory;
+using TestStack.White.ScreenObjects;
 using TestStack.White.ScreenObjects.Services;
 using TestStack.White.ScreenObjects.Sessions;
 using ConfigurableGUI.UITest.Screens;
@@ -20,63 +21,56 @@ namespace ConfigurableGUI.UITest
     [TestFixture]
     public class MainWindowTest
     {
-        [Test]
-        public void verifyGreetingLabel()
+        // This is recreated for each test and the main fixture for each test to get its screen from
+        private ScreenRepository theScreenRepo { get; set; }
+
+        // This is recreated for each test and is only persisted in order to be able to call dispose on it in the teardown
+        private WorkSession theWorkSession { get; set; }
+
+        [SetUp]
+        public void createApplication()
         {
             var directoryName = @"H:\Users\Thomas\Documents\Visual Studio 2015\Projects\ConfigurableGUI\ConfigurableGUI\bin\Debug";
             var markpadLocation = Path.Combine(directoryName, @"ConfigurableGUI.exe");
             Application Application = Application.Launch(markpadLocation);
 
-            var workPath = @"H:\Users\Thomas\Documents\Visual Studio 2015\Projects\ConfigurableGUI\ConfigurableGUI\bin\Debug";
             var workConfiguration = new WorkConfiguration
             {
-                ArchiveLocation = workPath,
+                ArchiveLocation = directoryName,
                 Name = "ConfigurableGUI"
             };
 
-            CoreAppXmlConfiguration.Instance.WorkSessionLocation = new DirectoryInfo(workPath);
-            using (var workSession = new WorkSession(workConfiguration, new NullWorkEnvironment()))
-            {
-                var screenRepository = workSession.Attach(Application);
-                var mainWindow = screenRepository.Get<MainWindowScreen>("MainWindow", InitializeOption.NoCache);
+            CoreAppXmlConfiguration.Instance.WorkSessionLocation = new DirectoryInfo(directoryName);
+            theWorkSession = new WorkSession(workConfiguration, new NullWorkEnvironment());
+            theScreenRepo = theWorkSession.Attach(Application);
+        }
 
-                Assert.That(mainWindow.GreetingLabel.Equals("Greeting"));
-            }
+        [TearDown]
+        public void destroyApplication()
+        {
+            theWorkSession.Dispose();
+        }
 
-            Application.Kill();
+        [Test]
+        public void verifyGreetingLabel()
+        {
+            var mainWindow = theScreenRepo.Get<MainWindowScreen>("MainWindow", InitializeOption.NoCache);
+
+            Assert.That(mainWindow.GreetingLabel.Equals("Greeting"));
         }
 
         [Test]
         public void verifySaveLoad()
         {
-            var directoryName = @"H:\Users\Thomas\Documents\Visual Studio 2015\Projects\ConfigurableGUI\ConfigurableGUI\bin\Debug";
-            var markpadLocation = Path.Combine(directoryName, @"ConfigurableGUI.exe");
-            Application Application = Application.Launch(markpadLocation);
+            var mainWindow = theScreenRepo.Get<MainWindowScreen>("MainWindow", InitializeOption.NoCache);
 
-            var workPath = @"H:\Users\Thomas\Documents\Visual Studio 2015\Projects\ConfigurableGUI\ConfigurableGUI\bin\Debug";
-            var workConfiguration = new WorkConfiguration
-            {
-                ArchiveLocation = workPath,
-                Name = "ConfigurableGUI"
-            };
+            mainWindow.GreetingText = "verifySaveLoadTest";
+            mainWindow.Save();
 
-            CoreAppXmlConfiguration.Instance.WorkSessionLocation = new DirectoryInfo(workPath);
-            using (var workSession = new WorkSession(workConfiguration, new NullWorkEnvironment()))
-            {
-                var screenRepository = workSession.Attach(Application);
-                var mainWindow = screenRepository.Get<MainWindowScreen>("MainWindow", InitializeOption.NoCache);
+            mainWindow.GreetingText = " ";
+            mainWindow.Load();
 
-                mainWindow.GreetingText = "verifySaveLoadTest";
-                mainWindow.Save();
-
-                mainWindow.GreetingText = " ";
-                mainWindow.Load();
-
-                Assert.That(mainWindow.GreetingText.Equals("verifySaveLoadTest"));
-
-            }
-            Application.Kill();
-
+            Assert.That(mainWindow.GreetingText.Equals("verifySaveLoadTest"));
         }
     }
 }

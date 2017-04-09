@@ -68,7 +68,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screens\MainWindowScreen.cs" />
     <Compile Include="Screens\Screen.cs" />
-    <Compile Include="Screens\UITestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
