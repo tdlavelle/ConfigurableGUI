@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-
+﻿using NUnit.Framework;
 using System.IO;
 using System.Reflection;
 using TestStack.White.Configuration;
@@ -13,7 +7,6 @@ using TestStack.White.ScreenObjects;
 using TestStack.White.ScreenObjects.Services;
 using TestStack.White.ScreenObjects.Sessions;
 using ConfigurableGUI.UITest.Screens;
-using System.Threading;
 using TestStack.White;
 
 namespace ConfigurableGUI.UITest
@@ -30,17 +23,20 @@ namespace ConfigurableGUI.UITest
         [SetUp]
         public void createApplication()
         {
-            var directoryName = @"H:\Users\Thomas\Documents\Visual Studio 2015\Projects\ConfigurableGUI\ConfigurableGUI\bin\Debug";
-            var markpadLocation = Path.Combine(directoryName, @"ConfigurableGUI.exe");
+            var relPath = @"..\..\..\ConfigurableGUI\bin\Debug";
+            var currentPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var fullPath = Path.Combine(currentPath, relPath);
+            var appName = @"ConfigurableGUI.exe";
+            var markpadLocation = Path.Combine(fullPath, appName);
             Application Application = Application.Launch(markpadLocation);
 
             var workConfiguration = new WorkConfiguration
             {
-                ArchiveLocation = directoryName,
+                ArchiveLocation = fullPath,
                 Name = "ConfigurableGUI"
             };
 
-            CoreAppXmlConfiguration.Instance.WorkSessionLocation = new DirectoryInfo(directoryName);
+            CoreAppXmlConfiguration.Instance.WorkSessionLocation = new DirectoryInfo(fullPath);
             theWorkSession = new WorkSession(workConfiguration, new NullWorkEnvironment());
             theScreenRepo = theWorkSession.Attach(Application);
         }

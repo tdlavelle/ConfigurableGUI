@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
+using System.Reflection;
 using System.Xml.Serialization;
 
 namespace ConfigurableGUI
 {
     public class ConfigurableGUIConfiguration
     {
-        private const string configFileLocation = @"H:\Users\Thomas\Documents\Visual Studio 2015\Projects\ConfigurableGUI\ConfigurableGUI\bin\Debug\ConfigurableGUI.config.xml";
+        private const string relConfigFileLocation = @"..\..\..\ConfigurableGUI\bin\Debug";
+        private const string configFileName = @"ConfigurableGUI.config.xml";
+
         private object configFileLock = new object();
 
         public string GreetingText;
@@ -20,7 +18,7 @@ namespace ConfigurableGUI
             ConfigurableGUIConfiguration config;
             lock (configFileLock)
             {
-                using (FileStream configFile = new FileStream(configFileLocation, FileMode.Open))
+                using (FileStream configFile = new FileStream(getFileLocationName(), FileMode.Open))
                 {
                     XmlSerializer configLoader = createConfigLoader();
                     config = (ConfigurableGUIConfiguration)configLoader.Deserialize(configFile);
@@ -34,7 +32,7 @@ namespace ConfigurableGUI
         {
             lock (configFileLock)
             {
-                using (StreamWriter configFile = new StreamWriter(configFileLocation))
+                using (StreamWriter configFile = new StreamWriter(getFileLocationName()))
                 {
                     XmlSerializer configLoader = createConfigLoader();
                     configLoader.Serialize(configFile, this);
@@ -47,5 +45,11 @@ namespace ConfigurableGUI
             return new XmlSerializer(typeof(ConfigurableGUIConfiguration));
         }
 
+        private string getFileLocationName()
+        {
+            var currentPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var fullPath = Path.Combine(currentPath, relConfigFileLocation);
+            return Path.Combine(fullPath, configFileName);
+        }
     }
 }

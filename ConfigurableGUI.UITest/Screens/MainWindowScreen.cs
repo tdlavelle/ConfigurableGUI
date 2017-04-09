@@ -1,8 +1,5 @@
-﻿using System;
-using System.Windows.Automation;
-using TestStack.White.ScreenObjects;
+﻿using TestStack.White.ScreenObjects;
 using TestStack.White.UIItems;
-using TestStack.White.UIItems.Finders;
 using TestStack.White.UIItems.WindowItems;
 
 namespace ConfigurableGUI.UITest.Screens
